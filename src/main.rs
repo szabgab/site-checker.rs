@@ -3,9 +3,6 @@ use clap::Parser;
 use serde::Serialize;
 //use chrono::serde::ts_seconds;
 
-// TODO create report a JSON file
-// TODO from the JSON file create a report in HTML format
-
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
@@ -49,9 +46,34 @@ fn process(url: &str) {
     get_robots_txt(url);
     get_main_page(url);
 
+    create_report_json(&report);
+    create_report_html(&report);
+}
+
+fn create_report_json(report: &Report) {
     let serialized = serde_json::to_string(&report).unwrap();
     println!("{}", serialized);
     std::fs::write("report.json", serialized).unwrap();
+}
+
+fn create_report_html(report: &Report) {
+    let template = include_str!("../templates/report.html");
+    let template = liquid::ParserBuilder::with_stdlib()
+        .build()
+        .unwrap()
+        .parse(template)
+        .unwrap();
+
+    let globals = liquid::object!({
+        "description": "Report".to_string(),
+        "title": "Report".to_string(),
+        "url_pagepath": "https://site-checker.code-maven.com/",
+        "site_name": "Report",
+        "report": &report,
+    });
+    let output = template.render(&globals).unwrap();
+
+    std::fs::write("report.html", output).unwrap();
 }
 
 fn get_main_page(url: &str) {

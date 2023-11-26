@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{description}}">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{url_pagepath}}" />
+    <meta property="og:title" content="{{title}}" />
+    <meta property="og:description" content="{{description}}" />
+    <meta property="og:site_name" content="{{site_name}}" />
+    {% if image %}<meta property="og:image" content="{{url_image_path}}" />{% endif %}
+
+    <meta name="twitter:creator" content="@szabgab">
+    <meta name="twitter:title" content="{{title}}">
+    <meta name="twitter:description" content="{{description}}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:widgets:new-embed-design" content="on">
+    {% if image %}<meta name="twitter:image:src" content="{{url}}{{image_path}}">{% endif %}
+
+  </head>
+  <body>
+
+  <section class="section">
+    <div class="container">
+      <!-- navbar start -->
+      <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+  
+          <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-home">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+  
+        <div id="navbar-home" class="navbar-menu">
+          <div class="navbar-start">
+            <a href="/" class="navbar-item">Home</a>
+          </div>
+        </div>
+      </nav>
+      <!-- navbar end -->
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h1 class="title">
+        {{title}}
+      </h1>
+
+      <div class="content">
+        date: {{report.date}}
+      </div>
+    </div>   
+  </section>
+  <footer class="footer">
+    <div class="content has-text-centered">
+      Footer
+    </div>
+  </footer>  
+
+  </body>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+// Get all "navbar-burger" elements
+const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+// Add a click event on each of them
+$navbarBurgers.forEach( el => {
+  el.addEventListener('click', () => {
+
+    // Get the target from the "data-target" attribute
+    const target = el.dataset.target;
+    const $target = document.getElementById(target);
+
+    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+    el.classList.toggle('is-active');
+    $target.classList.toggle('is-active');
+
+  });
+});
+
+});
+</script>
