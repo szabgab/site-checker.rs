@@ -14,3 +14,13 @@
 * check if the sitemap.xml lists all the pages?
 * check internal link densiti
 
+## Development / Contributions
+
+```
+git clone git@github.com:szabgab/site-checker.rs.git
+cd site-checker
+```
+
+Optionally install [pre-commit](https://pre-commit.com/) and then run `pre-commit install` to configure it in the current repository.
+
+
