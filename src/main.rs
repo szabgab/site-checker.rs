@@ -32,6 +32,11 @@ struct Report {
     main: Page,
 }
 
+#[derive(Debug, Serialize)]
+struct Required {
+    main_title_length: i32,
+}
+
 impl Default for Report {
     fn default() -> Report {
         Report {
@@ -86,6 +91,10 @@ fn create_report_json(report: &Report) {
 }
 
 fn create_report_html(report: &Report) {
+    let required = Required {
+        main_title_length: 10,
+    };
+
     let template = include_str!("../templates/report.html");
     let template = liquid::ParserBuilder::with_stdlib()
         .build()
@@ -99,8 +108,7 @@ fn create_report_html(report: &Report) {
         "url_pagepath": "https://site-checker.code-maven.com/",
         "site_name": "Report",
         "report": &report,
-
-        "main_title_length": report.main.title.len() > 10,
+        "required": &required,
     });
     let output = template.render(&globals).unwrap();
 
