@@ -1,6 +1,8 @@
 use chrono::{DateTime, Utc};
 use clap::Parser;
+use scraper::{Html, Selector};
 use serde::Serialize;
+
 //use chrono::serde::ts_seconds;
 
 #[derive(Parser, Debug)]
@@ -26,6 +28,7 @@ struct Report {
     robots_txt_exists: bool,
 
     main_page_exists: bool,
+    main_title: String,
 }
 
 impl Default for Report {
@@ -35,6 +38,7 @@ impl Default for Report {
             host: "".to_string(),
             robots_txt_exists: false,
             main_page_exists: false,
+            main_title: "".to_string(),
         }
     }
 }
@@ -85,6 +89,8 @@ fn create_report_html(report: &Report) {
         "url_pagepath": "https://site-checker.code-maven.com/",
         "site_name": "Report",
         "report": &report,
+
+        "main_title_length": report.main_title.len() > 10,
     });
     let output = template.render(&globals).unwrap();
 
@@ -99,8 +105,15 @@ fn get_main_page(url: &str, report: &mut Report) {
             std::process::exit(1);
         }
     };
-    //println!("{:?}", res);
     report.main_page_exists = res.status() == 200;
+
+    let html = res.text().unwrap();
+    let document = Html::parse_document(&html);
+    let selector = Selector::parse("title").unwrap();
+    for element in document.select(&selector) {
+        report.main_title = element.inner_html();
+    }
+    //println!("{:?}", html);
 }
 
 fn get_robots_txt(url: &str, report: &mut Report) {

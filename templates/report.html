@@ -58,12 +58,13 @@
       </h1>
 
       <div class="content">
-        Report generated at {{report.date}} for <a href="{{report.host}}">{{report.host}}</a>
+        Report generated at {{report.date}} for <a href="{{report.host}}">{{report.main_title}}</a>
         <h2>robots.txt</h2>
-        Exists: {% if report.robots_txt_exists %}YES{% else %}NO{% endif %}<br>
+        Exists: {% if report.robots_txt_exists %}<span class="tag is-success">YES</span>{% else %}<span class="tag is-danger">NO</span>{% endif %}<br>
         <h2>Sitemap</h2>
         <h2>Main page</h2>
-        Exists: {% if report.main_page_exists %}YES{% else %}NO{% endif %}<br>
+        Exists: {% if report.main_page_exists %}<span class="tag is-success">YES</span>{% else %}<span class="tag is-danger">NO</span>{% endif %}<br>
+        Title: {{ report.main_title }} {% if main_title_length %}<span class="tag is-success">OK</span>{% else %}<span class="tag is-danger">Too short</span>{% endif %}<br>
       </div>
     </div>   
   </section>
