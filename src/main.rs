@@ -17,11 +17,15 @@ struct Cli {
 struct Report {
     //    #[serde(with = "ts_seconds")]
     date: DateTime<Utc>,
+    host: String,
 }
 
 impl Default for Report {
     fn default() -> Report {
-        Report { date: Utc::now() }
+        Report {
+            date: Utc::now(),
+            host: "".to_string(),
+        }
     }
 }
 
@@ -40,6 +44,7 @@ fn process(url: &str) {
     // TODO: check if URL is a root URL https://site.something.com/
 
     let report = Report {
+        host: url.to_string(),
         ..Report::default()
     };
 
