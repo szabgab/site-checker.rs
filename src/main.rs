@@ -14,10 +14,17 @@ struct Cli {
 }
 
 #[derive(Debug, Serialize)]
+struct Link {
+    href: String,
+    text: String,
+}
+
+#[derive(Debug, Serialize)]
 struct Page {
     path: String,
     title: String,
     description: String,
+    links: Vec<Link>,
 }
 
 #[derive(Debug, Serialize)]
@@ -54,6 +61,7 @@ impl Default for Page {
             path: "".to_string(),
             title: "".to_string(),
             description: "".to_string(),
+            links: vec![],
         }
     }
 }
@@ -143,6 +151,29 @@ fn get_page(url: &str) -> (bool, Page) {
         page.description = element.attr("content").unwrap().to_string();
     }
     //println!("{:?}", html);
+
+    let selector = Selector::parse("a").unwrap();
+    for element in document.select(&selector) {
+        // TODO remove consequite white-space
+        let text = element.text().collect::<Vec<_>>().join("");
+        let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
+
+        // This is probably a hamburger or an imgae
+        // TODO: report these and then decide what to do with these if there is an image as the link
+        if text.is_empty() {
+            continue;
+        }
+        match element.attr("href") {
+            Some(href) => page.links.push(Link {
+                href: href.to_string(),
+                text,
+            }),
+            None => page.links.push(Link {
+                href: "".to_string(),
+                text,
+            }),
+        }
+    }
 
     (exists, page)
 }
