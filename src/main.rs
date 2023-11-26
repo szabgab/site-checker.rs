@@ -3,8 +3,6 @@ use clap::Parser;
 use scraper::{Html, Selector};
 use serde::Serialize;
 
-//use chrono::serde::ts_seconds;
-
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
@@ -24,7 +22,6 @@ struct Page {
 
 #[derive(Debug, Serialize)]
 struct Report {
-    //    #[serde(with = "ts_seconds")]
     date: DateTime<Utc>,
     host: String,
     robots_txt_exists: bool,
