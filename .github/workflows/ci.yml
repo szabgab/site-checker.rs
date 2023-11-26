@@ -47,11 +47,14 @@ jobs:
     - name: Download processor
       run: |
         wget https://ssg.code-maven.com/code-maven-web
-        chmod +x code-maven-web
+        chmod +x code-maven-web       
 
     - name: Generate pages
       run: |
         ./code-maven-web --root site --outdir _site
+
+    - name: Create reports
+      run: ./reports.sh
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
