@@ -78,7 +78,7 @@ fn process(url: &str) {
     };
 
     get_robots_txt(url, &mut report);
-    get_main_page(url, &mut report);
+    (report.main_page_exists, report.main) = get_page(url);
 
     create_report_json(&report);
     create_report_html(&report);
@@ -116,7 +116,7 @@ fn create_report_html(report: &Report) {
     std::fs::write("report.html", output).unwrap();
 }
 
-fn get_main_page(url: &str, report: &mut Report) {
+fn get_page(url: &str) -> (bool, Page) {
     let res = match reqwest::blocking::get(url) {
         Ok(res) => res,
         Err(err) => {
@@ -124,21 +124,27 @@ fn get_main_page(url: &str, report: &mut Report) {
             std::process::exit(1);
         }
     };
-    report.main_page_exists = res.status() == 200;
+    let mut page = Page { ..Page::default() };
+    let exists = res.status() == 200;
+    if !exists {
+        return (exists, page);
+    }
 
     let html = res.text().unwrap();
     let document = Html::parse_document(&html);
     let selector = Selector::parse("title").unwrap();
     for element in document.select(&selector) {
-        report.main.title = element.inner_html();
+        page.title = element.inner_html();
     }
 
     // <meta name="description" content="Magyarul Izraelből">
     let selector = Selector::parse("meta[name='description'").unwrap();
     for element in document.select(&selector) {
-        report.main.description = element.attr("content").unwrap().to_string();
+        page.description = element.attr("content").unwrap().to_string();
     }
     //println!("{:?}", html);
+
+    (exists, page)
 }
 
 fn get_robots_txt(url: &str, report: &mut Report) {
