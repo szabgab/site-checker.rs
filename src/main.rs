@@ -19,6 +19,7 @@ struct Cli {
 struct Page {
     path: String,
     title: String,
+    description: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -35,6 +36,7 @@ struct Report {
 #[derive(Debug, Serialize)]
 struct Required {
     main_title_length: i32,
+    main_description_length: i32,
 }
 
 impl Default for Report {
@@ -54,6 +56,7 @@ impl Default for Page {
         Page {
             path: "".to_string(),
             title: "".to_string(),
+            description: "".to_string(),
         }
     }
 }
@@ -93,6 +96,7 @@ fn create_report_json(report: &Report) {
 fn create_report_html(report: &Report) {
     let required = Required {
         main_title_length: 10,
+        main_description_length: 30,
     };
 
     let template = include_str!("../templates/report.html");
@@ -130,6 +134,12 @@ fn get_main_page(url: &str, report: &mut Report) {
     let selector = Selector::parse("title").unwrap();
     for element in document.select(&selector) {
         report.main.title = element.inner_html();
+    }
+
+    // <meta name="description" content="Magyarul Izraelből">
+    let selector = Selector::parse("meta[name='description'").unwrap();
+    for element in document.select(&selector) {
+        report.main.description = element.attr("content").unwrap().to_string();
     }
     //println!("{:?}", html);
 }

@@ -65,6 +65,7 @@
         <h2>Main page</h2>
         Exists: {% if report.main_page_exists %}<span class="tag is-success">YES</span>{% else %}<span class="tag is-danger">NO</span>{% endif %}<br>
         Title: {{ report.main.title }} {% if report.main.title.size > required.main_title_length %}<span class="tag is-success">OK</span>{% else %}<span class="tag is-danger">Too short</span>{% endif %} (Actual length: {{ report.main.title.size }} Required length {{ required.main_title_length }})<br>
+        Description: {{ report.main.description }} {% if report.main.description.size > required.main_description_length %}<span class="tag is-success">OK</span>{% else %}<span class="tag is-danger">Too short</span>{% endif %} (Actual length: {{ report.main.description.size }} Required length {{ required.main_description_length }})<br>
       </div>
     </div>
   </section>
