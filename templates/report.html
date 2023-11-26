@@ -59,6 +59,11 @@
 
       <div class="content">
         Report generated at {{report.date}} for <a href="{{report.host}}">{{report.host}}</a>
+        <h2>robots.txt</h2>
+        Exists: {% if report.robots_txt_exists %}YES{% else %}NO{% endif %}<br>
+        <h2>Sitemap</h2>
+        <h2>Main page</h2>
+        Exists: {% if report.main_page_exists %}YES{% else %}NO{% endif %}<br>
       </div>
     </div>   
   </section>

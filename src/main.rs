@@ -13,11 +13,19 @@ struct Cli {
     verbose: bool,
 }
 
+// #[derive(Debug, Serialize)]
+// struct Page {
+//     path: String,
+// }
+
 #[derive(Debug, Serialize)]
 struct Report {
     //    #[serde(with = "ts_seconds")]
     date: DateTime<Utc>,
     host: String,
+    robots_txt_exists: bool,
+
+    main_page_exists: bool,
 }
 
 impl Default for Report {
@@ -25,6 +33,8 @@ impl Default for Report {
         Report {
             date: Utc::now(),
             host: "".to_string(),
+            robots_txt_exists: false,
+            main_page_exists: false,
         }
     }
 }
@@ -43,13 +53,13 @@ fn main() {
 fn process(url: &str) {
     // TODO: check if URL is a root URL https://site.something.com/
 
-    let report = Report {
+    let mut report = Report {
         host: url.to_string(),
         ..Report::default()
     };
 
-    get_robots_txt(url);
-    get_main_page(url);
+    get_robots_txt(url, &mut report);
+    get_main_page(url, &mut report);
 
     create_report_json(&report);
     create_report_html(&report);
@@ -57,7 +67,7 @@ fn process(url: &str) {
 
 fn create_report_json(report: &Report) {
     let serialized = serde_json::to_string(&report).unwrap();
-    println!("{}", serialized);
+    //println!("{}", serialized);
     std::fs::write("report.json", serialized).unwrap();
 }
 
@@ -81,7 +91,7 @@ fn create_report_html(report: &Report) {
     std::fs::write("report.html", output).unwrap();
 }
 
-fn get_main_page(url: &str) {
+fn get_main_page(url: &str, report: &mut Report) {
     let res = match reqwest::blocking::get(url) {
         Ok(res) => res,
         Err(err) => {
@@ -89,11 +99,11 @@ fn get_main_page(url: &str) {
             std::process::exit(1);
         }
     };
-    println!("{:?}", res.status());
     //println!("{:?}", res);
+    report.main_page_exists = res.status() == 200;
 }
 
-fn get_robots_txt(url: &str) {
+fn get_robots_txt(url: &str, report: &mut Report) {
     // TODO does robots.txt exist?
     // TODO parse the robots.txt and extract the links to the sitemaps
     // TODO are there sitemaps?
@@ -104,6 +114,7 @@ fn get_robots_txt(url: &str) {
             std::process::exit(1);
         }
     };
-    println!("{:?}", res.status());
-    println!("{:?}", res.text());
+    //println!("{:?}", res.text());
+
+    report.robots_txt_exists = res.status() == 200;
 }
