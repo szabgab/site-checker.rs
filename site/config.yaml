@@ -17,6 +17,8 @@ navbar:
   start:
     - path: /
       title: Home
+    - path: /archive
+      title: Archive
   end:
     - path: /about
       title: About
