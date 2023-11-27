@@ -76,10 +76,11 @@ fn main() {
         println!("Processing {}", &args.host);
     }
 
-    process(&args.host);
+    let status = process(&args.host);
+    std::process::exit(status);
 }
 
-fn process(url: &str) {
+fn process(url: &str) -> i32 {
     // TODO: check if URL is a root URL https://site.something.com/
     let start = std::time::Instant::now();
 
@@ -96,6 +97,7 @@ fn process(url: &str) {
 
     create_report_json(&report);
     create_report_html(&report);
+    0
 }
 
 fn create_report_json(report: &Report) {
