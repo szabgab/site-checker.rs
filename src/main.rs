@@ -32,6 +32,7 @@ struct Report {
     date: DateTime<Utc>,
     host: String,
     robots_txt_exists: bool,
+    elapsed_time: std::time::Duration,
 
     main_page_exists: bool,
     main: Page,
@@ -48,6 +49,7 @@ impl Default for Report {
         Report {
             date: Utc::now(),
             host: "".to_string(),
+            elapsed_time: std::time::Duration::from_secs(0),
             robots_txt_exists: false,
             main_page_exists: false,
             main: Page { ..Page::default() },
@@ -79,6 +81,7 @@ fn main() {
 
 fn process(url: &str) {
     // TODO: check if URL is a root URL https://site.something.com/
+    let start = std::time::Instant::now();
 
     let mut report = Report {
         host: url.to_string(),
@@ -87,6 +90,9 @@ fn process(url: &str) {
 
     get_robots_txt(url, &mut report);
     (report.main_page_exists, report.main) = get_page(url);
+
+    let end = std::time::Instant::now();
+    report.elapsed_time = end - start;
 
     create_report_json(&report);
     create_report_html(&report);
