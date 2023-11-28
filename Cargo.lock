@@ -1398,6 +1398,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "seo-site-checker"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "liquid",
+ "liquid-core",
+ "regex",
+ "reqwest",
+ "scraper",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "serde"
 version = "1.0.193"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1465,22 +1481,6 @@ name = "siphasher"
 version = "0.3.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "38b58827f4464d87d377d175e90bf58eb00fd8716ff0a62f80356b5e61555d0d"
-
-[[package]]
-name = "site-checker"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "liquid",
- "liquid-core",
- "regex",
- "reqwest",
- "scraper",
- "serde",
- "serde_json",
- "tokio",
-]
 
 [[package]]
 name = "slab"
