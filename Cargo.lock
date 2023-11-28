@@ -1474,6 +1474,7 @@ dependencies = [
  "clap",
  "liquid",
  "liquid-core",
+ "regex",
  "reqwest",
  "scraper",
  "serde",

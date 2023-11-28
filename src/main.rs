@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use clap::Parser;
+use regex::Regex;
 use scraper::{Html, Selector};
 use serde::Serialize;
 
@@ -81,7 +82,16 @@ fn main() {
 }
 
 fn process(url: &str) -> i32 {
-    // TODO: check if URL is a root URL https://site.something.com/
+    // check if URL is a root URL https://site.something.com/
+    let re = Regex::new(r"^https://[a-z.-]+/?$").unwrap();
+    match re.captures(url) {
+        Some(_) => {}
+        None => {
+            eprintln!("Invalid URL '{}'", url);
+            return 1;
+        }
+    };
+
     let start = std::time::Instant::now();
 
     let mut report = Report {
