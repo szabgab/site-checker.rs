@@ -34,11 +34,13 @@ struct Cli {
 }
 
 fn main() {
+    simple_logger::init_with_level(log::Level::Info).unwrap();
+
     let args = Cli::parse();
     //dbg!(&args);
     if args.verbose {
-        println!("Welcome!");
-        println!("Processing {}", &args.host);
+        log::info!("Welcome");
+        log::info!("Processing {}", &args.host);
     }
 
     let status = process(&args, &args.host, args.pages);
@@ -81,9 +83,9 @@ fn process(args: &Cli, url: &str, pages: u32) -> i32 {
             continue;
         }
 
-        println!("seen {}, now processing path: '{}'", seen.len(), path);
+        log::info!("seen {}, now processing path: '{}'", seen.len(), path);
         if 0 < pages && pages <= seen.len() as u32 {
-            println!("Seen {} pages. Exiting.", seen.len());
+            log::info!("Seen {} pages. Exiting.", seen.len());
             break;
         }
 
@@ -126,17 +128,16 @@ fn get_internal_links(page: &Page) -> VecDeque<String> {
 
 fn create_report_json(report: &Report, json_file: &str) {
     let serialized = serde_json::to_string(&report).unwrap();
-    //println!("{}", serialized);
     std::fs::write(json_file, serialized).unwrap();
 }
 
 fn get_page(url: &str) -> (bool, Page) {
-    println!("Processing '{}'", url);
+    log::info!("Processing '{}'", url);
 
     let res = match reqwest::blocking::get(url) {
         Ok(res) => res,
         Err(err) => {
-            println!("Error {}", err);
+            log::error!("Error {}", err);
             std::process::exit(1);
         }
     };
@@ -158,7 +159,6 @@ fn get_page(url: &str) -> (bool, Page) {
     for element in document.select(&selector) {
         page.description = element.attr("content").unwrap().to_string();
     }
-    //println!("{:?}", html);
 
     let selector = Selector::parse("a").unwrap();
     for element in document.select(&selector) {
@@ -193,11 +193,10 @@ fn get_robots_txt(url: &str, report: &mut Report) {
     let res = match reqwest::blocking::get(format!("{}/robots.txt", url)) {
         Ok(res) => res,
         Err(err) => {
-            println!("Error {}", err);
+            log::error!("Error {}", err);
             std::process::exit(1);
         }
     };
-    //println!("{:?}", res.text());
 
     report.robots_txt_exists = res.status() == 200;
 }

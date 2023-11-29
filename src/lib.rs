@@ -59,6 +59,7 @@ impl Default for Page {
 }
 
 pub fn create_report_html(report: &Report, html_filename: &str) {
+    log::info!("create_report_html {}", html_filename);
     let required = Required {
         main_title_length: 10,
         main_description_length: 30,
