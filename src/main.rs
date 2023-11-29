@@ -171,16 +171,11 @@ fn get_page(url: &str) -> (bool, Page) {
         if text.is_empty() {
             continue;
         }
-        match element.attr("href") {
-            Some(href) => page.links.push(Link {
-                href: href.to_string(),
-                text,
-            }),
-            None => page.links.push(Link {
-                href: "".to_string(),
-                text,
-            }),
-        }
+        let href = element.attr("href").unwrap_or("");
+        page.links.push(Link {
+            href: href.to_string(),
+            text,
+        });
     }
 
     (exists, page)
