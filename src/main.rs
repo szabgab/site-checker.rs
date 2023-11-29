@@ -11,6 +11,20 @@ struct Cli {
     #[arg(long, required = true)]
     host: String,
 
+    #[arg(
+        long,
+        default_value = "report.html",
+        help = "Path to the html report file"
+    )]
+    html: String,
+
+    #[arg(
+        long,
+        default_value = "report.json",
+        help = "Path to the json report file"
+    )]
+    json: String,
+
     #[arg(long, default_value_t = 0, help = "Limit number of pages to fetch")]
     pages: u32,
 
@@ -83,11 +97,11 @@ fn main() {
         println!("Processing {}", &args.host);
     }
 
-    let status = process(&args.host, args.pages);
+    let status = process(&args, &args.host, args.pages);
     std::process::exit(status);
 }
 
-fn process(url: &str, pages: u32) -> i32 {
+fn process(args: &Cli, url: &str, pages: u32) -> i32 {
     // check if URL is a root URL https://site.something.com/
     let re = Regex::new(r"^https://[a-z.-]+/?$").unwrap();
     match re.captures(url) {
@@ -143,8 +157,13 @@ fn process(url: &str, pages: u32) -> i32 {
     let end = std::time::Instant::now();
     report.elapsed_time = end - start;
 
-    create_report_json(&report);
-    create_report_html(&report);
+    if !args.json.is_empty() {
+        create_report_json(&report, &args.json);
+    }
+    if !args.html.is_empty() {
+        create_report_html(&report, &args.html);
+    }
+
     0
 }
 
@@ -161,13 +180,13 @@ fn get_internal_links(page: &Page) -> VecDeque<String> {
     pages_queue
 }
 
-fn create_report_json(report: &Report) {
+fn create_report_json(report: &Report, json_file: &str) {
     let serialized = serde_json::to_string(&report).unwrap();
     //println!("{}", serialized);
-    std::fs::write("report.json", serialized).unwrap();
+    std::fs::write(json_file, serialized).unwrap();
 }
 
-fn create_report_html(report: &Report) {
+fn create_report_html(report: &Report, html_filename: &str) {
     let required = Required {
         main_title_length: 10,
         main_description_length: 30,
@@ -190,7 +209,7 @@ fn create_report_html(report: &Report) {
     });
     let output = template.render(&globals).unwrap();
 
-    std::fs::write("report.html", output).unwrap();
+    std::fs::write(html_filename, output).unwrap();
 }
 
 fn get_page(url: &str) -> (bool, Page) {
