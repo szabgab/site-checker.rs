@@ -152,6 +152,9 @@ fn get_internal_links(page: &Page) -> VecDeque<String> {
     let pages_queue = VecDeque::from(
         page.links
             .iter()
+            .filter(|link| !link.href.starts_with("https://"))
+            .filter(|link| !link.href.starts_with("http://"))
+            .filter(|link| !link.href.starts_with("mailto:"))
             .map(|link| link.href.clone())
             .collect::<Vec<String>>(),
     );
@@ -260,4 +263,34 @@ fn get_robots_txt(url: &str, report: &mut Report) {
     //println!("{:?}", res.text());
 
     report.robots_txt_exists = res.status() == 200;
+}
+
+#[test]
+fn test_get_internal_links() {
+    let page = Page {
+        path: "/".to_string(),
+        title: "Hello World".to_string(),
+        description: "This is a description".to_string(),
+        links: vec![
+            Link {
+                href: "/about".to_string(),
+                text: "About".to_string(),
+            },
+            Link {
+                href: "https://other.site/".to_string(),
+                text: "Other site".to_string(),
+            },
+            Link {
+                href: "http://insecure.site/".to_string(),
+                text: "Insecure link".to_string(),
+            },
+            Link {
+                href: "mailto:foo@bar.com".to_string(),
+                text: "Send message".to_string(),
+            },
+        ],
+    };
+    let links = get_internal_links(&page);
+    assert_eq!(links.len(), 1);
+    assert_eq!(links[0], "/about");
 }
