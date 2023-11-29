@@ -1,9 +1,10 @@
-use chrono::{DateTime, Utc};
 use clap::Parser;
 use regex::Regex;
 use scraper::{Html, Selector};
-use serde::Serialize;
+
 use std::collections::{HashMap, VecDeque};
+
+use seo_site_checker::{create_report_html, Link, Page, Report};
 
 #[derive(Parser, Debug)]
 #[command(version)]
@@ -30,63 +31,6 @@ struct Cli {
 
     #[arg(long, short, default_value_t = false, help = "Turn on verbose mode")]
     verbose: bool,
-}
-
-#[derive(Debug, Serialize)]
-struct Link {
-    href: String,
-    text: String,
-}
-
-#[derive(Debug, Serialize)]
-struct Page {
-    path: String,
-    title: String,
-    description: String,
-    links: Vec<Link>,
-}
-
-#[derive(Debug, Serialize)]
-struct Report {
-    date: DateTime<Utc>,
-    host: String,
-    robots_txt_exists: bool,
-    elapsed_time: std::time::Duration,
-
-    main_page_exists: bool,
-    main: Page,
-    pages: Vec<Page>,
-}
-
-#[derive(Debug, Serialize)]
-struct Required {
-    main_title_length: i32,
-    main_description_length: i32,
-}
-
-impl Default for Report {
-    fn default() -> Report {
-        Report {
-            date: Utc::now(),
-            host: "".to_string(),
-            elapsed_time: std::time::Duration::from_secs(0),
-            robots_txt_exists: false,
-            main_page_exists: false,
-            main: Page { ..Page::default() },
-            pages: vec![],
-        }
-    }
-}
-
-impl Default for Page {
-    fn default() -> Page {
-        Page {
-            path: "".to_string(),
-            title: "".to_string(),
-            description: "".to_string(),
-            links: vec![],
-        }
-    }
 }
 
 fn main() {
@@ -184,32 +128,6 @@ fn create_report_json(report: &Report, json_file: &str) {
     let serialized = serde_json::to_string(&report).unwrap();
     //println!("{}", serialized);
     std::fs::write(json_file, serialized).unwrap();
-}
-
-fn create_report_html(report: &Report, html_filename: &str) {
-    let required = Required {
-        main_title_length: 10,
-        main_description_length: 30,
-    };
-
-    let template = include_str!("../templates/report.html");
-    let template = liquid::ParserBuilder::with_stdlib()
-        .build()
-        .unwrap()
-        .parse(template)
-        .unwrap();
-
-    let globals = liquid::object!({
-        "description": "Report".to_string(),
-        "title": "Report".to_string(),
-        "url_pagepath": "https://site-checker.code-maven.com/",
-        "site_name": "Report",
-        "report": &report,
-        "required": &required,
-    });
-    let output = template.render(&globals).unwrap();
-
-    std::fs::write(html_filename, output).unwrap();
 }
 
 fn get_page(url: &str) -> (bool, Page) {
