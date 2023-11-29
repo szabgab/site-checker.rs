@@ -230,3 +230,16 @@ fn test_get_internal_links() {
     assert_eq!(links.len(), 1);
     assert_eq!(links[0], "/about");
 }
+
+#[test]
+fn test_process_html() {
+    let mut page = Page { ..Page::default() };
+    let html = r#"
+        <title>This is the title of the page</title>
+        <a href="https://external.link">External link</a>
+    "#;
+    process_html(html, &mut page);
+    assert_eq!(page.title, "This is the title of the page");
+    assert_eq!(page.links[0].href, "https://external.link");
+    assert_eq!(page.links[0].text, "External link");
+}
