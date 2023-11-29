@@ -149,8 +149,13 @@ fn get_page(url: &str) -> (bool, Page) {
         return (exists, page);
     }
 
-    let html = res.text().unwrap();
-    let document = Html::parse_document(&html);
+    process_html(&res.text().unwrap(), &mut page);
+
+    (exists, page)
+}
+
+fn process_html(html: &str, page: &mut Page) {
+    let document = Html::parse_document(html);
     let selector = Selector::parse("title").unwrap();
     for element in document.select(&selector) {
         page.title = element.inner_html();
@@ -179,8 +184,6 @@ fn get_page(url: &str) -> (bool, Page) {
             text,
         });
     }
-
-    (exists, page)
 }
 
 fn get_robots_txt(url: &str, report: &mut Report) {
