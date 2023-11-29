@@ -53,6 +53,10 @@ jobs:
       run: |
         ./code-maven-web --root site --outdir _site
 
+    - name: Copy static html files
+      run: cp site/*.html _site/
+
+
     # - name: Create reports
     #   run: ./reports.sh
 
