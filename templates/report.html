@@ -71,6 +71,14 @@
             <li>{{link.text}} {{link.href}}</li>
           {% endfor %}
         </ul>
+        <h2>Pages</h2>
+        {% for page in report.pages %}
+        <div>
+          <h3>{{ page.title }}</h3>
+          Title: {{ page.title }} {% if page.title.size > required.main_title_length %}<span class="tag is-success">OK</span>{% else %}<span class="tag is-danger">Too short</span>{% endif %} (Actual length: {{ page.title.size }} Required length {{ required.main_title_length }})<br>
+          Description: {{ page.description }} {% if page.description.size > required.main_description_length %}<span class="tag is-success">OK</span>{% else %}<span class="tag is-danger">Too short</span>{% endif %} (Actual length: {{ page.description.size }} Required length {{ required.main_description_length }})<br>
+        </div>
+        {% endfor %}
       </div>
     </div>
   </section>

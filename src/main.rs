@@ -3,12 +3,16 @@ use clap::Parser;
 use regex::Regex;
 use scraper::{Html, Selector};
 use serde::Serialize;
+use std::collections::{HashMap, VecDeque};
 
 #[derive(Parser, Debug)]
 #[command(version)]
 struct Cli {
     #[arg(long, required = true)]
     host: String,
+
+    #[arg(long, default_value_t = 0, help = "Limit number of pages to fetch")]
+    pages: u32,
 
     #[arg(long, short, default_value_t = false, help = "Turn on verbose mode")]
     verbose: bool,
@@ -37,6 +41,7 @@ struct Report {
 
     main_page_exists: bool,
     main: Page,
+    pages: Vec<Page>,
 }
 
 #[derive(Debug, Serialize)]
@@ -54,6 +59,7 @@ impl Default for Report {
             robots_txt_exists: false,
             main_page_exists: false,
             main: Page { ..Page::default() },
+            pages: vec![],
         }
     }
 }
@@ -77,11 +83,11 @@ fn main() {
         println!("Processing {}", &args.host);
     }
 
-    let status = process(&args.host);
+    let status = process(&args.host, args.pages);
     std::process::exit(status);
 }
 
-fn process(url: &str) -> i32 {
+fn process(url: &str, pages: u32) -> i32 {
     // check if URL is a root URL https://site.something.com/
     let re = Regex::new(r"^https://[a-z.-]+/?$").unwrap();
     match re.captures(url) {
@@ -91,6 +97,7 @@ fn process(url: &str) -> i32 {
             return 1;
         }
     };
+    let url = url.trim_end_matches('/');
 
     let start = std::time::Instant::now();
 
@@ -100,7 +107,49 @@ fn process(url: &str) -> i32 {
     };
 
     get_robots_txt(url, &mut report);
+
+    let mut seen: HashMap<String, bool> = HashMap::new();
+
     (report.main_page_exists, report.main) = get_page(url);
+    seen.insert("/".to_string(), true);
+
+    let mut pages_queue = VecDeque::from(
+        report
+            .main
+            .links
+            .iter()
+            .map(|link| link.href.clone())
+            .collect::<Vec<String>>(),
+    );
+    while let Some(path) = pages_queue.pop_front() {
+        if path.is_empty() {
+            continue;
+        }
+        if seen.contains_key(&path) {
+            continue;
+        }
+
+        println!("seen {}, now processing path: '{}'", seen.len(), path);
+        if 0 < pages && pages <= seen.len() as u32 {
+            println!("Seen {} pages. Exiting.", seen.len());
+            break;
+        }
+
+        let (page_exists, page) = get_page(&format!("{}{}", url, path));
+        seen.insert(path.clone(), true);
+        if page_exists {
+            pages_queue.append(&mut VecDeque::from(
+                page.links
+                    .iter()
+                    .map(|link| link.href.clone())
+                    .collect::<Vec<String>>(),
+            ));
+            report.pages.push(page);
+        }
+    }
+
+    // We need a list of unique pages that we can derive from the sitemap xml and from following the internal links of the site.
+    // We also need a queue of links we extracted from pages to visit
 
     let end = std::time::Instant::now();
     report.elapsed_time = end - start;
@@ -143,6 +192,8 @@ fn create_report_html(report: &Report) {
 }
 
 fn get_page(url: &str) -> (bool, Page) {
+    println!("Processing '{}'", url);
+
     let res = match reqwest::blocking::get(url) {
         Ok(res) => res,
         Err(err) => {
@@ -200,7 +251,7 @@ fn get_robots_txt(url: &str, report: &mut Report) {
     // TODO does robots.txt exist?
     // TODO parse the robots.txt and extract the links to the sitemaps
     // TODO are there sitemaps?
-    let res = match reqwest::blocking::get(format!("{}robots.txt", url)) {
+    let res = match reqwest::blocking::get(format!("{}/robots.txt", url)) {
         Ok(res) => res,
         Err(err) => {
             println!("Error {}", err);
