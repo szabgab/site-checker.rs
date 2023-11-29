@@ -134,14 +134,16 @@ fn create_report_json(report: &Report, json_file: &str) {
 fn get_page(url: &str) -> (bool, Page) {
     log::info!("Processing '{}'", url);
 
+    let mut page = Page { ..Page::default() };
+
     let res = match reqwest::blocking::get(url) {
         Ok(res) => res,
         Err(err) => {
             log::error!("Error {}", err);
-            std::process::exit(1);
+            return (false, page);
         }
     };
-    let mut page = Page { ..Page::default() };
+
     let exists = res.status() == 200;
     if !exists {
         return (exists, page);
@@ -188,8 +190,8 @@ fn get_robots_txt(url: &str, report: &mut Report) {
     let res = match reqwest::blocking::get(format!("{}/robots.txt", url)) {
         Ok(res) => res,
         Err(err) => {
-            log::error!("Error {}", err);
-            std::process::exit(1);
+            log::error!("Error fetching robots.txt {}", err);
+            return;
         }
     };
 
