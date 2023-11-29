@@ -53,7 +53,7 @@ create the binary.
 
 ## Reports of a few small sites:
 
-* [izrael.szabgab.com](/izrael.szabgab.com.html)
-* [site-checker.code-maven.com](/site-checker.code-maven.com.html)
-* [ssg.code-maven.com](/ssg.code-maven.com.html)
+* [izrael.szabgab.com](/reports/izrael.szabgab.com.html)
+* [site-checker.code-maven.com](/reports/site-checker.code-maven.com.html)
+* [ssg.code-maven.com](/reports/ssg.code-maven.com.html)
 

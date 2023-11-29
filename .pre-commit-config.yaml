@@ -19,6 +19,7 @@ repos:
     hooks:
     - id: typos
       stages: [commit]
+      exclude: '^site/reports'
   - repo: https://github.com/crate-ci/committed
     rev: v1.0.20
     hooks:
