@@ -113,14 +113,8 @@ fn process(url: &str, pages: u32) -> i32 {
     (report.main_page_exists, report.main) = get_page(url);
     seen.insert("/".to_string(), true);
 
-    let mut pages_queue = VecDeque::from(
-        report
-            .main
-            .links
-            .iter()
-            .map(|link| link.href.clone())
-            .collect::<Vec<String>>(),
-    );
+    let mut pages_queue = get_internal_links(&report.main);
+
     while let Some(path) = pages_queue.pop_front() {
         if path.is_empty() {
             continue;
@@ -138,12 +132,7 @@ fn process(url: &str, pages: u32) -> i32 {
         let (page_exists, page) = get_page(&format!("{}{}", url, path));
         seen.insert(path.clone(), true);
         if page_exists {
-            pages_queue.append(&mut VecDeque::from(
-                page.links
-                    .iter()
-                    .map(|link| link.href.clone())
-                    .collect::<Vec<String>>(),
-            ));
+            pages_queue.append(&mut get_internal_links(&page));
             report.pages.push(page);
         }
     }
@@ -157,6 +146,16 @@ fn process(url: &str, pages: u32) -> i32 {
     create_report_json(&report);
     create_report_html(&report);
     0
+}
+
+fn get_internal_links(page: &Page) -> VecDeque<String> {
+    let pages_queue = VecDeque::from(
+        page.links
+            .iter()
+            .map(|link| link.href.clone())
+            .collect::<Vec<String>>(),
+    );
+    pages_queue
 }
 
 fn create_report_json(report: &Report) {
