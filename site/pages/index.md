@@ -31,7 +31,7 @@ Given a hostname of a website
 ```
 git clone git@github.com:szabgab/site-checker.rs.git
 cd site-checker
-cargo run -- --pages 5 --host https://rust.code-maven.com/
+cargo run --bin seo-site-checker -- --pages 5 --host https://rust.code-maven.com/
 ```
 
 This will create a file called `report.json` and another file called `report.html`.
@@ -41,7 +41,7 @@ This will create a file called `report.json` and another file called `report.htm
 
 ```
 cargo install --git https://github.com/szabgab/site-checker.rs
-site-checker --host https://rust.code-maven.com/
+seo-site-checker --host https://rust.code-maven.com/
 ```
 
 ## Install if you don't have Rust installed
