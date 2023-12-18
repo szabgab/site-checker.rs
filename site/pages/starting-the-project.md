@@ -1,6 +1,7 @@
 ---
 title: Starting the Site Checker project
 timestamp: 2023-11-27T08:45:01
+published: true
 description: The Site Checker will help me improve the SEO of the other site I build with the Static Site Generator.
 ---
 
