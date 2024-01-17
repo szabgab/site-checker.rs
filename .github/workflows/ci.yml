@@ -51,7 +51,7 @@ jobs:
 
     - name: Generate pages
       run: |
-        ./code-maven --root site
+        ./code-maven web --root site
 
     - name: Copy static html files
       run: |
