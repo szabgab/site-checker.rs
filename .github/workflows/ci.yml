@@ -46,12 +46,12 @@ jobs:
 
     - name: Download processor
       run: |
-        wget https://ssg.code-maven.com/code-maven-web
-        chmod +x code-maven-web
+        wget https://ssg.code-maven.com/code-maven
+        chmod +x code-maven
 
     - name: Generate pages
       run: |
-        ./code-maven-web --root site --outdir _site
+        ./code-maven --root site
 
     - name: Copy static html files
       run: |
