@@ -14,16 +14,16 @@ homepage = "https://site-checker.code-maven.com/"
 
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
-clap = { version = "4.4", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 liquid = "0.26"
 liquid-core = "0.26"
 log = "0.4"
-regex = "1.10"
+regex = "1.12"
 reqwest = { version = "0.13", features = ["blocking"] }
 scraper = "0.25"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-simple_logger = "5.1"
+simple_logger = "5.2"
 tokio = "1.32"
 
 
