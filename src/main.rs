@@ -114,7 +114,7 @@ fn process(args: &Cli, url: &str, pages: u32) -> i32 {
 }
 
 fn get_internal_links(page: &Page) -> VecDeque<String> {
-    let pages_queue = VecDeque::from(
+    VecDeque::from(
         page.links
             .iter()
             .filter(|link| !link.href.starts_with("https://"))
@@ -122,8 +122,7 @@ fn get_internal_links(page: &Page) -> VecDeque<String> {
             .filter(|link| !link.href.starts_with("mailto:"))
             .map(|link| link.href.clone())
             .collect::<Vec<String>>(),
-    );
-    pages_queue
+    )
 }
 
 fn create_report_json(report: &Report, json_file: &str) {
