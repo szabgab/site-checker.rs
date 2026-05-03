@@ -1,4 +1,4 @@
-use seo_site_checker::{create_report_html, Report};
+use seo_site_checker::{Report, create_report_html};
 use std::fs::File;
 
 fn main() {

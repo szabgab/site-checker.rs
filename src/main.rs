@@ -4,7 +4,7 @@ use scraper::{Html, Selector};
 
 use std::collections::{HashMap, VecDeque};
 
-use seo_site_checker::{create_report_html, Link, Page, Report};
+use seo_site_checker::{Link, Page, Report, create_report_html};
 
 #[derive(Parser, Debug)]
 #[command(version)]
